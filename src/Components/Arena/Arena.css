@@ -1,22 +1,21 @@
 .arena-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse;
   align-items: center;
-  margin: auto;
+  justify-content: center;
   color: white;
 }
 
 .arena-container .boss-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  margin-bottom: 50px;
+  margin-right: 3rem;
 }
 
 .boss-container .boss-content {
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 0.5rem;
   border-radius: 10px;
   background-image: linear-gradient(
     to right,
@@ -26,10 +25,14 @@
     #f99185 52%,
     #cf556c 78%,
     #b12a5b 100%
+    
   );
   background-size: 600% 600%;
   animation: gradient-animation 8s ease infinite;
   margin-bottom: 25px;
+ 
+box-shadow:  20px 20px 60px #d96e65,
+             -20px -20px 60px #ff9489;
 }
 
 .boss-content h2 {
@@ -43,8 +46,8 @@
 }
 
 .boss-content .image-content img {
-  width: 350px;
-  height: 300px;
+  width: 20vw;
+  height: 100%;
   border-radius: 10px;
   object-fit: cover;
 }
@@ -87,21 +90,23 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: space-around;
+  margin-left: 3rem;
 }
 
 .players-container .player {
   display: flex;
   flex-direction: column;
-  max-height: 80%;
-  padding: 10px;
+  max-height: 100%;
+  padding: 0.5rem;
   border-radius: 10px;
   background-color: gray;
+  box-shadow:  20px 20px 60px #a09c9c,
+             -20px -20px 60px #d8d4d4;
 }
 
 .player .image-content img {
-  width: 250px;
-  height: 300px;
+  width: 20vw;
+  height: 100%;
   border-radius: 10px;
   object-fit: cover;
 }
