@@ -3,14 +3,30 @@ import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, transformCharacterData } from '../constants';
 import myEpicGame from '../../utils/MyEpicGame.json';
 import './Arena.css';
+import BattleStart from './BattleStart';
 
 
 const Arena = ({ characterNFT }) => {
 
   const [gameContract, setGameContract] = useState(null);
   const [demon, setDemon] = useState(null);
+  const [attackState, setAttackState] = useState('');
 
-  const runAttackAction = async () => {};
+  const runAttackAction = async () => {
+    try {
+      if (gameContract) {
+        setAttackState('attacking');
+        console.log('Attacking Demon...');
+        const attackTxn = await gameContract.attackDemon();
+        await attackTxn.wait();
+        console.log('attackTxn:', attackTxn);
+        setAttackState('hit');
+      }
+    } catch (error) {
+      console.error('Error attacking Demon:', error);
+      setAttackState('');
+    }
+  };
 
   useEffect(() => {
     const { ethereum } = window;
@@ -46,6 +62,33 @@ const Arena = ({ characterNFT }) => {
 
   return (
     <div className="arena-container">
+      
+      {characterNFT && (
+
+        <div className="players-container">
+          <div className="player-container">
+
+            <div className="player">
+              <div className="image-content">
+                <h2>{characterNFT.name}</h2>
+                <img
+                  src={characterNFT.imageURI}
+                  alt={`Character ${characterNFT.name}`}
+                />
+                <div className="health-bar">
+                  <progress value={characterNFT.hp} max={characterNFT.maxHp} />
+                  <p>{`${characterNFT.hp} / ${characterNFT.maxHp} HP`}</p>
+                </div>
+              </div>
+              <div className="stats">
+                <h4>{`⚔️ Attack Damage: ${characterNFT.attackDamage}`}</h4>
+              </div>
+            </div>
+            <h2>Your Character</h2>
+          </div>
+        </div>
+      )}
+       <BattleStart/>
       {demon && (
         <div className="boss-container">
           <div className={`boss-content`}>
@@ -65,32 +108,8 @@ const Arena = ({ characterNFT }) => {
           </div>
         </div>
       )}
-
-{characterNFT && (
-      <div className="players-container">
-        <div className="player-container">
-         
-          <div className="player">
-            <div className="image-content">
-              <h2>{characterNFT.name}</h2>
-              <img
-                src={characterNFT.imageURI}
-                alt={`Character ${characterNFT.name}`}
-              />
-              <div className="health-bar">
-                <progress value={characterNFT.hp} max={characterNFT.maxHp} />
-                <p>{`${characterNFT.hp} / ${characterNFT.maxHp} HP`}</p>
-              </div>
-            </div>
-            <div className="stats">
-              <h4>{`⚔️ Attack Damage: ${characterNFT.attackDamage}`}</h4>
-            </div>
-          </div>
-          <h2>Your Character</h2>
-        </div>
-      </div>
-    )}
-  </div>
+     
+    </div>
   );
 };
 
