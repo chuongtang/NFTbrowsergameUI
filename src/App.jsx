@@ -6,6 +6,7 @@ import SelectCharacter from './Components/SelectCharacter';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, transformCharacterData } from './Components/constants';
 import Arena from './Components/Arena';
+import LoadingIndicator from './Components/LoadingIndicator';
 
 // Constants
 const TWITTER_HANDLE = '_buildspace';
@@ -15,6 +16,7 @@ const App = () => {
   // State
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
 
 
@@ -25,6 +27,8 @@ const App = () => {
 
       if (!ethereum) {
         console.log('Make sure you have MetaMask!');
+        alert('Please install Metamask Wallet')
+        setIsLoading(false);
         return;
       } else {
         console.log('We have the ethereum object', ethereum);
@@ -42,10 +46,16 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   // Render Methods
   const renderContent = () => {
+
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
+
     /* If user has has not connected to your app ➡ Show Connect To Wallet Button*/
     if (!currentAccount) {
       return (
@@ -68,7 +78,7 @@ const App = () => {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
       /*If the connected wallet has characterNFT, it's time to battle*/
     } else if (currentAccount && characterNFT) {
-      return <Arena characterNFT={characterNFT} />;
+      return <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />;
     }
   };
 
@@ -100,6 +110,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     checkIfWalletIsConnected();
   }, []);
 
@@ -121,13 +132,12 @@ const App = () => {
       );
 
       // go to our contract on the blockchain and run a read request "checkIfUserHasNFT"
-      const txn = await gameContract.checkIfUserHasNFT();
-      if (txn.name) {
+      const characterNFT = await gameContract.checkIfUserHasNFT();
+      if (characterNFT.name) {
         console.log('User has character NFT');
-        setCharacterNFT(transformCharacterData(txn));
-      } else {
-        console.log('No character NFT found');
+        setCharacterNFT(transformCharacterData(characterNFT));
       }
+      setIsLoading(false);
     };
 
     /* We only want to run this, if we have a connected wallet*/

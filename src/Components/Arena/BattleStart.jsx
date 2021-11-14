@@ -1,12 +1,12 @@
 import './Arena.css';
 
-const BattleStart = () => {
+const BattleStart = ({attackState}) => {
 
   return (
 
 
     <button className='btn btn--shockwave is-active'>
-      Let's the Battle Begin!
+      {!attackState ?<p>Let the Battle Begin!</p> : <p style={{"color":"yellow"}}>{attackState}</p>}
     </button>
 
   )

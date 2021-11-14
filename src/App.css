@@ -8,13 +8,14 @@
 .container {
   height: 100%;
   background-color: #797b7c;
+  background-image: url(./assets/BG.jpg);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .header-container {
-  padding-top: 30px;
+  padding-top: 5px;
 }
 
 .header {
@@ -26,12 +27,10 @@
 
 .sub-text {
   font-size: 25px;
-  color: white;
+  color: rgb(243, 225, 225);
 }
 
-.content-container {
-  background-color: #a200d6;
-}
+
 
 .cta-button {
   height: 45px;
@@ -39,7 +38,7 @@
   width: auto;
   padding-left: 40px;
   padding-right: 40px;
-  border-radius: 5px;
+  border-radius: 1rem;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;

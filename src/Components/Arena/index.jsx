@@ -6,11 +6,12 @@ import './Arena.css';
 import BattleStart from './BattleStart';
 
 
-const Arena = ({ characterNFT }) => {
+const Arena = ({ characterNFT, setCharacterNFT }) => {
 
   const [gameContract, setGameContract] = useState(null);
   const [demon, setDemon] = useState(null);
   const [attackState, setAttackState] = useState('');
+  const [showToast, setShowToast] = useState(false);
 
   const runAttackAction = async () => {
     try {
@@ -18,10 +19,18 @@ const Arena = ({ characterNFT }) => {
         setAttackState('attacking');
         console.log('Attacking Demon...');
         const attackTxn = await gameContract.attackDemon();
+
+        // Await until our transaction has been mined
         await attackTxn.wait();
         console.log('attackTxn:', attackTxn);
         setAttackState('hit');
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+          setAttackState('');
+        }, 5000);
       }
+      
     } catch (error) {
       console.error('Error attacking Demon:', error);
       setAttackState('');
@@ -54,15 +63,50 @@ const Arena = ({ characterNFT }) => {
       setDemon(transformCharacterData(demonTxn));
     };
 
+    /*
+      * Setup logic when this event is fired off
+      */
+    const onAttackComplete = (newDemonHp, newPlayerHp) => {
+      const demonHp = newDemonHp.toNumber();
+      const playerHp = newPlayerHp.toNumber();
+
+      console.log(`AttackComplete: Demon Hp: ${demonHp} Player Hp: ${playerHp}`);
+
+      /*
+      * Update both player and boss Hp
+      */
+      setDemon((prevState) => {
+        return { ...prevState, hp: demonHp };
+      });
+
+      setCharacterNFT((prevState) => {
+        return { ...prevState, hp: playerHp };
+      });
+    };
+
     if (gameContract) {
 
       fetchDemon();
+      gameContract.on('AttackComplete', onAttackComplete);
+    }
+
+    //Clean up this event when this component is removed
+    return () => {
+      if (gameContract) {
+        gameContract.off('AttackComplete', onAttackComplete);
+      }
     }
   }, [gameContract]);
 
   return (
     <div className="arena-container">
-      
+      {demon && characterNFT && (
+        <div id="toast" className={showToast ? 'show' : ''}>
+          <div id="desc">{`💥 ${demon.name} was hit for ${characterNFT.attackDamage}!`}</div>
+        </div>
+      )}
+
+
       {characterNFT && (
 
         <div className="players-container">
@@ -88,10 +132,11 @@ const Arena = ({ characterNFT }) => {
           </div>
         </div>
       )}
-       <BattleStart/>
+      <BattleStart attackState={attackState} />
       {demon && (
         <div className="boss-container">
-          <div className={`boss-content`}>
+          <div className={`boss-content ${attackState}`}>
+
             <h2>🔥 {demon.name} 🔥</h2>
             <div className="image-content">
               <img src={demon.imageURI} alt={`Demon ${demon.name}`} />
@@ -99,6 +144,9 @@ const Arena = ({ characterNFT }) => {
                 <progress value={demon.hp} max={demon.maxHp} />
                 <p>{`${demon.hp} / ${demon.maxHp} HP`}</p>
               </div>
+            </div>
+            <div className="stats">
+              <h4>{`🏹 Attack Damage: ${demon.attackDamage}`}</h4>
             </div>
           </div>
           <div className="attack-container">
@@ -108,7 +156,7 @@ const Arena = ({ characterNFT }) => {
           </div>
         </div>
       )}
-     
+
     </div>
   );
 };
