@@ -3,7 +3,7 @@ This is front end UI for my NFT browser game.
 To play the game:
 1. Install Metamask wallet
 2. Get some free crypto Eth from [Rinkeby](https://faucet.rinkeby.io/) or shoot me an email and I'll transfer you some, for free 🤓
-3. Connect your wallet to the game page
+3. Connect your wallet to the game page via Rinkeby network
 4. Select your charater and mint your NFT.
 5. Let the battle begin!
 
